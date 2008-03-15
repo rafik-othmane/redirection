@@ -3,7 +3,7 @@
 Plugin Name: Redirection
 Plugin URI: http://urbangiraffe.com/plugins/redirection/
 Description: A redirection manager
-Version: 2.0
+Version: 2.0.1
 Author: John Godley
 Author URI: http://urbangiraffe.com
 ============================================================================================================
@@ -34,6 +34,7 @@ Author URI: http://urbangiraffe.com
 1.7.24 - Stop problems with mod_security
 1.7.25 - Fix database problem on some hosts
 2.0    - New verison
+2.0.1  - Install defaults when no existing redirection setup
 ============================================================================================================
 This software is provided "as is" and any express or implied warranties, including, but not limited to, the
 implied warranties of merchantibility and fitness for a particular purpose are disclaimed. In no event shall
@@ -58,7 +59,7 @@ include (dirname (__FILE__).'/models/monitor.php');
 include (dirname (__FILE__).'/modules/wordpress.php');
 include (dirname (__FILE__).'/modules/404.php');
 
-define ('DRAINHOLE_VERSION', '2.0');
+define ('DRAINHOLE_VERSION', '2.0.1');
 
 class Redirection extends Redirection_Plugin
 {
@@ -68,7 +69,7 @@ class Redirection extends Redirection_Plugin
 		
 		if (is_admin ())
 		{
-			$this->register_activation (__FILE__, 'update');
+			//$this->register_activation (__FILE__, 'update');
 
 			$this->add_action ('admin_menu');
 			$this->add_action ('admin_head');
@@ -111,6 +112,7 @@ class Redirection extends Redirection_Plugin
 	function update ()
 	{
 		$version = get_option ('redirection_version');
+
 		if ($version != DRAINHOLE_VERSION)
 		{
 			include_once (dirname (__FILE__).'/models/database.php');
@@ -128,13 +130,6 @@ class Redirection extends Redirection_Plugin
 		$this->render_admin ('submenu', array ('url' => $url));
 		
 		$options = $this->get_options ();
-		// if ($options['support'] == false && (!isset ($options['last_bug_time']) || time () > $options['last_bug_time'] + (24 * 60 * 60)))
-		// {
-		// 	$options['last_bug_time'] = time ();
-		// 	update_option ('redirection_options', $options);
-		// 	
-		// 	$this->render_admin ('support');
-		// }
 		
 		if ($_GET['sub'] == 'log')
 			return $this->admin_screen_log ();

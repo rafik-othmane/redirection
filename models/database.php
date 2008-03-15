@@ -117,8 +117,10 @@ class RE_Database
 			$this->upgrade_from_0 ();
 		else if ($current == '1.7')
 			$this->upgrade_from_1 ();
-		else if ($current == '1.9')
+		else if ($current == '1.9' || $current == 'DRAINHOLE_VERSION')
 			$this->upgrade_from_2 ();
+		else if ($current == '2.0')
+			$this->upgrade_from_20 ();
 
 		update_option ('redirection_version', $target);
 	}
@@ -157,7 +159,7 @@ class RE_Database
 	function upgrade_from_2 ()
 	{
 		global $wpdb;
-		
+
 		$wpdb->query ("ALTER TABLE `{$wpdb->prefix}redirection` ADD `group_id` int NOT NULL DEFAULT 0;");
 		$wpdb->query ("ALTER TABLE `{$wpdb->prefix}redirection` ADD `status` enum('enabled','disabled') NOT NULL DEFAULT 'enabled'");
 		$wpdb->query ("RENAME TABLE `{$wpdb->prefix}redirection` TO `{$wpdb->prefix}redirection_items`;");
@@ -283,6 +285,14 @@ class RE_Database
 		$wpdb->query ("UPDATE {$wpdb->prefix}redirection_logs SET group_id='1', module_id='1'");
 		
 		update_option ('redirection_options', $options);
+	}
+	
+	function upgrade_from_20 ()
+	{
+		global $wpdb;
+		
+		echo 'HERE';
+		$this->defaults ();
 	}
 	
 	function remove ($plugin)

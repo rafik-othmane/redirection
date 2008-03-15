@@ -137,7 +137,7 @@ class Apache_Module extends Red_Module
 				echo __ ('<strong>Location is invalid - check that path exists</strong>', 'redirection');
 				return;
 			}
-			else if (!is_writable (dirname ($this->location)))
+			else if ((file_exists ($this->location) && !is_writable ($this->location)) || (!file_exists ($this->location) && !is_writable (dirname ($this->location))))
 			{
 				echo '<code>'.$this->location.'</code></p>';
 				echo __ ('<strong>Could not write to configured <code>.htaccess</code> file - check file permissions</strong>', 'redirection');
