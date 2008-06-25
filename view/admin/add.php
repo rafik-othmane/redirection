@@ -1,10 +1,11 @@
-<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div id="added" style="display: none" class="updated">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?>
+<div id="added" style="display: none" class="updated">
 	<p><?php _e ('Your redirection has been added.', 'redirection'); ?></p>
 </div>
 
 <div class="wrap" id="add" <?php if ($hidden) echo ' style="display: none"' ?>>
 	<h2><?php _e ('Add new redirection', 'redirection') ?></h2>
-	
+		<?php $this->submenu (true); ?>
 	<form method="post" action="<?php echo $this->url ($_SERVER['REQUEST_URI']) ?>" onsubmit="add_redirection(this,<?php if ($add_to_screen) echo 'true'; else echo 'false' ?>);return false">
 	<table width="100%">
 	  <tr>

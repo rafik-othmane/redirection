@@ -1,6 +1,6 @@
 <?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap">
   <h2><?php _e ('Options', 'redirection') ?></h2>
-
+	<?php $this->submenu (true); ?>
   <form method="post" action="<?php echo $this->url ($_SERVER['REQUEST_URI']) ?>">
 	
 	<fieldset>

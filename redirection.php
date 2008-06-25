@@ -88,6 +88,29 @@ class Redirection extends Redirection_Plugin
 		$this->monitor = new Red_Monitor ($this->get_options ());
 	}
 
+	function is_25 ()
+	{
+		global $wp_version;
+		if (version_compare ('2.5', $wp_version) <= 0)
+			return true;
+		return false;
+	}
+	
+	function submenu ($inwrap = false)
+	{
+		// Decide what to do
+		$sub = isset ($_GET['sub']) ? $_GET['sub'] : '';
+	  $url = explode ('&', $_SERVER['REQUEST_URI']);
+	  $url = $url[0];
+
+		if (!$this->is_25 () && $inwrap == false)
+			$this->render_admin ('submenu', array ('url' => $url, 'sub' => $sub, 'class' => 'id="subsubmenu"'));
+		else if ($this->is_25 () && $inwrap == true)
+			$this->render_admin ('submenu', array ('url' => $url, 'sub' => $sub, 'class' => 'class="subsubsub"', 'trail' => ' | '));
+			
+		return $sub;
+	}
+	
 	function version ()
 	{
 		$plugin_data = implode ('', file (__FILE__));
@@ -126,8 +149,7 @@ class Redirection extends Redirection_Plugin
 	{
 	  $this->update ();
 	  
-	  $url = get_bloginfo ('wpurl').'/wp-admin/edit.php?page=redirection.php';
-		$this->render_admin ('submenu', array ('url' => $url));
+		$sub = $this->submenu ();
 		
 		$options = $this->get_options ();
 		

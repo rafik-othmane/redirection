@@ -1,6 +1,6 @@
 <?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap"> <?php if ($pos % 2 == 1) echo ' class="alt"' ?>
 	<h2><?php _e ('Redirection Log', 'redirection'); ?></h2>
-	
+	<?php $this->submenu (true); ?>
 		<div id="pager" class="pager">
 			<form method="get" action="<?php echo $this->url ($pager->url) ?>">
 				<input type="hidden" name="page" value="<?php echo $_GET['page'] ?>"/>

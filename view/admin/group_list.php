@@ -1,6 +1,6 @@
 <?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap">
 	<h2><?php _e ('Groups for module', 'redirection'); ?>: <a href="edit.php?page=redirection.php&amp;sub=modules"><?php echo htmlspecialchars ($module->name) ?></a></h2>
-
+	<?php $this->submenu (true); ?>
 	<div id="pager" class="pager">
 		<form method="get" action="<?php echo $this->url ($pager->url) ?>">
 			<input type="hidden" name="page" value="<?php echo $_GET['page'] ?>"/>
