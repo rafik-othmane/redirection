@@ -1,4 +1,4 @@
-<td class="logo">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><td class="logo">
 	<a href="edit.php?page=redirection.php&amp;sub=groups&amp;id=<?php echo $module->id ?>">
 	<?php if ($module->type == 'apache') : ?>
 	<img src="<?php echo $this->url () ?>/images/modules/apache.png" width="55" height="56" alt="Apache"/>

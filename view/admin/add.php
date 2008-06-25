@@ -1,4 +1,4 @@
-<div id="added" style="display: none" class="updated">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div id="added" style="display: none" class="updated">
 	<p><?php _e ('Your redirection has been added.', 'redirection'); ?></p>
 </div>
 

@@ -1,4 +1,4 @@
-<form action="" method="post" accept-charset="utf-8" onsubmit="save_redirect(<?php echo $redirect->id ?>, this); return false" style="padding: 3px">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><form action="" method="post" accept-charset="utf-8" onsubmit="save_redirect(<?php echo $redirect->id ?>, this); return false" style="padding: 3px">
 	<h3><?php printf (__ ('%s by matching %s', 'redirection'), $redirect->actions ($redirect->action_type), $redirect->match->name ()) ?></h3>
 	
 <table class="edit">

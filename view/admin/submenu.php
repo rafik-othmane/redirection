@@ -1,4 +1,4 @@
-<ul id="subsubmenu">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><ul id="subsubmenu">
   <li><a <?php if (!isset($_GET['sub'])) echo 'class="current"'; ?>href="<?php echo $url ?><?php if (isset ($_GET['id'])) echo '&amp;id='.$_GET['id'] ?>"><?php _e ('Redirects', 'redirection'); ?></a></li>
   <li><a <?php if ($_GET['sub'] == 'groups') echo 'class="current"'; ?>href="<?php echo $url ?>&amp;sub=groups<?php if (isset ($_GET['id'])) echo '&amp;id='.$_GET['id'] ?>"><?php _e ('Groups', 'redirection'); ?></a></li>
   <li><a <?php if ($_GET['sub'] == 'modules') echo 'class="current"'; ?>href="<?php echo $url ?>&amp;sub=modules"><?php _e ('Modules', 'redirection'); ?></a></li>

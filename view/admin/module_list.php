@@ -1,4 +1,4 @@
-<div class="wrap">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap">
 	<h2><?php _e ('Modules', 'redirection'); ?></h2>
 
 	<?php if (count ($modules) > 0) : ?>

@@ -1,4 +1,4 @@
-<div class="wrap">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap">
 	<h2><?php _e ('Groups for module', 'redirection'); ?>: <a href="edit.php?page=redirection.php&amp;sub=modules"><?php echo htmlspecialchars ($module->name) ?></a></h2>
 
 	<div id="pager" class="pager">

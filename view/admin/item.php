@@ -1,4 +1,4 @@
-<div class="date" id="info_<?php echo $redirect->id ?>" style="width:8em">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="date" id="info_<?php echo $redirect->id ?>" style="width:8em">
 <?php if ($redirect->last_access == 0) : ?>
 &mdash;
 <?php else : ?>

@@ -1,4 +1,4 @@
-<table>
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><table>
 	<tr>
 		<th><a href="<?php echo $log->url ?>"><?php _e ('Source URL', 'redirection'); ?>:</a></th>
 		<td><input style="width: 95%" type="text" name="something" readonly="readonly" value="<?php echo htmlspecialchars (urldecode ($log->url)) ?>"/></td>

@@ -107,7 +107,7 @@ class Red_Apache_File extends Red_FileIO
 	
 	function decode_url ($url)
 	{
-		$url = urldecode ($url);
+		$url = rawurldecode ($url);
 		$url = str_replace ('\\.', '.', $url);
 		return $url;
 	}

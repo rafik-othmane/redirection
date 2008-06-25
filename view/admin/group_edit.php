@@ -1,4 +1,4 @@
-<div class="item" style="width:70%">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="item" style="width:70%">
 	<form action="" method="post" accept-charset="utf-8" onsubmit="save_group(<?php echo $group->id ?>, this); return false">
 	<table class="edit">
 		<tr>

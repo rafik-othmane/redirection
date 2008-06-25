@@ -1,4 +1,4 @@
-<div class="date">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="date">
 	<a href="#" onclick="return edit_group(<?php echo $group->id ?>)"><img src="<?php echo $this->url () ?>/images/edit.png" width="16" height="16" alt="Edit"/></a>
 	<a href="#" onclick="return edit_group(<?php echo $group->id ?>)"><?php _e ('edit group', 'redirection'); ?></a>
 </div>

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo $this->url () ?>/admin.css" type="text/css" media="screen" title="no title" charset="utf-8"/>
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><link rel="stylesheet" href="<?php echo $this->url () ?>/admin.css" type="text/css" media="screen" title="no title" charset="utf-8"/>
 
 <script type="text/javascript">
   wp_base        = '<?php echo $this->url () ?>/';

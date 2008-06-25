@@ -1,4 +1,4 @@
-<td width="16">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><td width="16">
 	<input type="checkbox" name="select[]" value="<?php echo $log->id ?>"/>
 </td>
 <td style="width:9em"<?php $pager->sortable_class ('created') ?>>

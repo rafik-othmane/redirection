@@ -1,4 +1,4 @@
-<div class="wrap">
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap">
   <h2><?php _e ('Options', 'redirection') ?></h2>
 
   <form method="post" action="<?php echo $this->url ($_SERVER['REQUEST_URI']) ?>">

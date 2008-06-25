@@ -1,4 +1,4 @@
-<div class="wrap"> <?php if ($pos % 2 == 1) echo ' class="alt"' ?>
+<?php if (!defined ('ABSPATH')) die ('No direct access allowed'); ?><div class="wrap"> <?php if ($pos % 2 == 1) echo ' class="alt"' ?>
 	<h2><?php _e ('Redirection Log', 'redirection'); ?></h2>
 	
 		<div id="pager" class="pager">
