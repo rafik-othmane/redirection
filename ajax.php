@@ -32,7 +32,7 @@ function urldecode_deep ($data)
 		return $data;
 	}
 	
-	return urldecode ($data);
+	return rawurldecode ($data);
 }
 
 class Redirection_AJAX extends Redirection_Plugin
