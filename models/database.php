@@ -291,7 +291,6 @@ class RE_Database
 	{
 		global $wpdb;
 		
-		echo 'HERE';
 		$this->defaults ();
 	}
 	
