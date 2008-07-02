@@ -25,7 +25,7 @@
 				<th align="right"><?php _e ('Plugin Support', 'redirection'); ?>:</th>
 				<td>
 					<input type="checkbox" name="support" <?php echo $this->checked ($options['support']) ?> id="support"/> 
-					<label for="support"><span class="sub"><?php _e ('I\'ve supported the plugin, stop annoying me!', 'redirection'); ?></span></label>
+					<label for="support"><span class="sub"><?php _e ('I\'m a nice person and I have helped support the author of this plugin', 'redirection'); ?></span></label>
 				</td>
 			</tr>
 		</table>

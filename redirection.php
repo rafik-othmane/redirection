@@ -153,6 +153,7 @@ class Redirection extends Redirection_Plugin
 		
 		$options = $this->get_options ();
 		
+		$this->annoy ($options);
 		if ($_GET['sub'] == 'log')
 			return $this->admin_screen_log ();
 	  else if ($_GET['sub'] == 'options')
@@ -165,6 +166,22 @@ class Redirection extends Redirection_Plugin
 			return $this->admin_screen_modules ();
 		else
 			return $this->admin_redirects (isset ($_GET['id']) ? intval ($_GET['id']) : 0);
+	}
+	
+	function annoy ($options)
+	{
+		$last = 0;
+		if (isset ($options['annoy_last']))
+			$last = $options['annoy_last'];
+			
+		// Annoy you every 30 minutes
+		if (!$options['support'] && time () > $last + (30 * 60))
+		{
+			$options['annoy_last'] = time ();
+			update_option ('redirection_options', $options);
+			
+			$this->render_admin ('support');
+		}
 	}
 	
 	function admin_screen_modules ()
