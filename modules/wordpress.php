@@ -105,7 +105,7 @@ class WordPress_Module extends Red_Module
 
 	function status_header ($status)
 	{
-		// Fix for incorrect headers sent when using FastCGI
+		// Fix for incorrect headers sent when using FastCGI/IIS
 		if (substr (php_sapi_name (), 0, 3) == 'cgi')
 			return str_replace ('HTTP/1.1', 'Status:', $status);
 		return $status;

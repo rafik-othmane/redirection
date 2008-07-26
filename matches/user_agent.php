@@ -65,7 +65,7 @@ class Agent_Match extends Red_Match
 		<?php if ($this->action->can_perform_action ()) : ?>
 		</table>
 		<p style="padding: 0.5em"><?php _e ('The visitor will be redirected from the source URL if the user agent matches.  You can specify a <em>matched</em> target URL as the address to send visitors if they do match, and <em>not matched</em> if they don\'t match.  Leaving a URL blank means that the visitor is not redirected. <strong>All matches are performed as regular expressions</strong>.
-', 'filled-in'); ?></p>
+', 'redirection'); ?></p>
 		<table class="edit">
 
 		<tr>

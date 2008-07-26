@@ -28,16 +28,18 @@ class RE_Database
 		
 		// Create database
 		$wpdb->query ("CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}redirection_items` (
-		  `id` int(11) unsigned NOT NULL auto_increment,
+			`id` int(11) unsigned NOT NULL auto_increment,
 		  `url` mediumtext NOT NULL,
 		  `regex` int(11) unsigned NOT NULL default '0',
 		  `position` int(11) unsigned NOT NULL default '0',
-		  `action` varchar(20) NOT NULL,
+		  `last_count` int(10) unsigned NOT NULL default '0',
+		  `last_access` datetime NOT NULL,
+		  `group_id` int(11) NOT NULL default '0',
+		  `status` enum('enabled','disabled') NOT NULL default 'enabled',
+		  `action_type` varchar(20) NOT NULL,
+		  `action_code` int(11) unsigned NOT NULL,
 		  `action_data` mediumtext,
-			`action_code` int(11) unsigned NOT NULL default '0',
-			`match_type` varchar(20) NOT NULL,
-			`last_count` int(10) unsigned NOT NULL default '0',
-		  `last_access` datetime,
+		  `match_type` varchar(20) NOT NULL,
 		  PRIMARY KEY  (`id`)
 		)");
 
