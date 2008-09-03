@@ -3,7 +3,7 @@
 Plugin Name: Redirection
 Plugin URI: http://urbangiraffe.com/plugins/redirection/
 Description: A redirection manager
-Version: 2.0.3
+Version: 2.0.6
 Author: John Godley
 Author URI: http://urbangiraffe.com
 ============================================================================================================
@@ -37,6 +37,9 @@ Author URI: http://urbangiraffe.com
 2.0.1  - Install defaults when no existing redirection setup
 2.0.2  - Correct DB install, fix IIS problem
 2.0.3  - Fix #248.  Update plugin.php to better handle odd directories
+2.0.4  - get_home_path seems not be available for some people
+2.0.5  - Fix #264
+2.0.6  - Support for wp-load.php
 ============================================================================================================
 This software is provided "as is" and any express or implied warranties, including, but not limited to, the
 implied warranties of merchantibility and fitness for a particular purpose are disclaimed. In no event shall
@@ -68,7 +71,7 @@ class Redirection extends Redirection_Plugin
 	function Redirection ()
 	{
 		$this->register_plugin ('redirection', __FILE__);
-		
+
 		if (is_admin ())
 		{
 			//$this->register_activation (__FILE__, 'update');
@@ -80,15 +83,15 @@ class Redirection extends Redirection_Plugin
 		else
 		{
 			$this->update ();
-			
+
 			// Create a WordPress exporter and let it handle the load
 			$this->wp = new WordPress_Module ();
 			$this->wp->start ();
-			
+
 			$this->error = new Error404_Module ();
 			$this->error->start ();
 		}
-			
+
 		$this->monitor = new Red_Monitor ($this->get_options ());
 	}
 
@@ -99,7 +102,7 @@ class Redirection extends Redirection_Plugin
 			return true;
 		return false;
 	}
-	
+
 	function submenu ($inwrap = false)
 	{
 		// Decide what to do
@@ -111,14 +114,14 @@ class Redirection extends Redirection_Plugin
 			$this->render_admin ('submenu', array ('url' => $url, 'sub' => $sub, 'class' => 'id="subsubmenu"'));
 		else if ($this->is_25 () && $inwrap == true)
 			$this->render_admin ('submenu', array ('url' => $url, 'sub' => $sub, 'class' => 'class="subsubsub"', 'trail' => ' | '));
-			
+
 		return $sub;
 	}
-	
+
 	function version ()
 	{
 		$plugin_data = implode ('', file (__FILE__));
-		
+
 		if (preg_match ('|Version:(.*)|i', $plugin_data, $version))
 			return trim ($version[1]);
 		return '';
@@ -130,7 +133,7 @@ class Redirection extends Redirection_Plugin
 		if (strpos ($_SERVER['REQUEST_URI'], 'redirection.php'))
 			$this->render_admin ('head', array ('type' => $_GET['sub'] == '' ? '301' : $_GET['sub']));
 	}
-	
+
 	function admin_menu ()
 	{
   	add_management_page (__ ("Redirection", 'redirection'), __ ("Redirection", 'redirection'), "administrator", basename (__FILE__), array (&$this, "admin_screen"));
@@ -152,11 +155,11 @@ class Redirection extends Redirection_Plugin
 	function admin_screen ()
 	{
 	  $this->update ();
-	  
+
 		$sub = $this->submenu ();
-		
+
 		$options = $this->get_options ();
-		
+
 		$this->annoy ($options);
 		if ($_GET['sub'] == 'log')
 			return $this->admin_screen_log ();
@@ -171,29 +174,29 @@ class Redirection extends Redirection_Plugin
 		else
 			return $this->admin_redirects (isset ($_GET['id']) ? intval ($_GET['id']) : 0);
 	}
-	
+
 	function annoy ($options)
 	{
 		$last = 0;
 		if (isset ($options['annoy_last']))
 			$last = $options['annoy_last'];
-			
+
 		// Annoy you every 30 minutes
 		if (!$options['support'] && time () > $last + (30 * 60))
 		{
 			$options['annoy_last'] = time ();
 			update_option ('redirection_options', $options);
-			
+
 			$this->render_admin ('support');
 		}
 	}
-	
+
 	function admin_screen_modules ()
 	{
 		if (isset ($_POST['create']))
 		{
 			$_POST = stripslashes_deep ($_POST);
-			
+
 			if (($module = Red_Module::create ($_POST)))
 			{
 				$this->render_message (__ ('Your module was successfully created', 'redirection'));
@@ -202,31 +205,31 @@ class Redirection extends Redirection_Plugin
 			else
 				$this->render_error (__ ('Your module was not created - did you provide a name?', 'redirection'));
 		}
-		
+
 		$this->render_admin ('module_list', array ('modules' => Red_Module::get_all (), 'module_types' => Red_Module::get_types ()));
 	}
-	
+
 	function get_options ()
 	{
 		$options = get_option ('redirection_options');
 		if ($options === false)
 			$options = array ();
-			
+
 		$defaults = array
 		(
 			'lookup'  => 'http://geomaplookup.cinnamonthoughts.org/?ip=',
 			'support' => false
 		);
-		
+
 		foreach ($defaults AS $key => $value)
 		{
 			if (!isset ($options[$key]))
 				$options[$key] = $value;
 		}
-		
+
 		return $options;
 	}
-	
+
 	function inject ()
 	{
 		if ($_GET['page'] == 'redirection.php' && in_array ($_GET['sub'], array ('rss', 'xml', 'csv', 'apache')))
@@ -250,7 +253,7 @@ class Redirection extends Redirection_Plugin
 			$options['monitor_category'] = $_POST['monitor_category'];
 			$options['auto_target']      = $_POST['auto_target'];
 			$options['support']          = isset ($_POST['support']) ? true : false;
-			
+
 			update_option ('redirection_options', $options);
 
 			$this->render_message (__ ('Your options were updated', 'redirection'));
@@ -261,16 +264,16 @@ class Redirection extends Redirection_Plugin
 
 			$db = new RE_Database;
 			$db->remove (__FILE__);
-			
+
 			$this->render_message (__ ('Redirection data has been deleted and the plugin disabled', 'redirection'));
 			return;
 		}
 		else if (isset ($_POST['import']))
 		{
 			include (dirname (__FILE__).'/models/file_io.php');
-			
+
 			$importer = new Red_FileIO;
-			
+
 			$count = $importer->import ($_POST['group'], $_FILES['upload']);
 			if ($count > 0)
 				$this->render_message (sprintf (__ngettext ('%d redirection was successfully imported','%d redirections were successfully imported', $count, 'redirection'), $count));
@@ -285,15 +288,15 @@ class Redirection extends Redirection_Plugin
 	function admin_screen_log ()
 	{
 		include (dirname (__FILE__).'/models/pager.php');
-		
+
 		if (isset ($_POST['deleteall']))
 		{
 			RE_Log::delete_all (new RE_Pager ($_GET, $_SERVER['REQUEST_URI'], 'created', 'DESC', 'log'));
 			$this->render_message (__ ('Your logs have been deleted', 'redirection'));
 		}
-			
+
 		$pager = new RE_Pager ($_GET, $_SERVER['REQUEST_URI'], 'created', 'DESC', 'log');
-		
+
 		if (isset ($_GET['module']))
 			$logs = RE_Log::get_by_module ($pager, intval ($_GET['module']));
 		else if (isset ($_GET['group']))
@@ -302,15 +305,15 @@ class Redirection extends Redirection_Plugin
 			$logs = RE_Log::get_by_redirect ($pager, intval ($_GET['redirect']));
 		else
 			$logs = RE_Log::get ($pager);
-		
+
 		$options = $this->get_options ();
 		$this->render_admin ('log', array ('logs' => $logs, 'pager' => $pager, 'lookup' => $options['lookup']));
 	}
-	
+
 	function admin_groups ($module)
 	{
 		include (dirname (__FILE__).'/models/pager.php');
-		
+
 		if (isset ($_POST['add']))
 		{
 			if (Red_Group::create (stripslashes_deep ($_POST)))
@@ -321,7 +324,7 @@ class Redirection extends Redirection_Plugin
 			else
 				$this->render_error (__ ('Please specify a group name', 'redirection'));
 		}
-		
+
 		if ($module == 0)
 			$module = Red_Module::get_first_id ();
 
@@ -330,14 +333,14 @@ class Redirection extends Redirection_Plugin
 
   	$this->render_admin ('group_list', array ('groups' => $items, 'pager' => $pager, 'modules' => Red_Module::get_for_select (), 'module' => Red_Module::get ($module)));
 	}
-	
+
 	function admin_redirects ($group)
 	{
 		include (dirname (__FILE__).'/models/pager.php');
-		
+
 		if ($group == 0)
 			$group = Red_Group::get_first_id ();
-		
+
 		$pager = new RE_Pager ($_GET, $_SERVER['REQUEST_URI'], 'position', 'ASC');
 		$items = Red_Item::get_by_group ($group, $pager);
 

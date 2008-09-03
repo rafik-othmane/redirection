@@ -25,12 +25,12 @@ class Red_Item
 	var $url         = null;
 	var $regex       = false;
 	var $action_data = null;
-	
+
 	var $last_access   = null;
 	var $last_count    = 0;
-	
+
 	var $tracking      = true;
-	
+
 	function Red_Item ($values, $type = '', $match = '')
 	{
 		if (is_array ($values))
@@ -44,7 +44,7 @@ class Red_Item
 				$this->match->id          = $this->id;
 				$this->match->action_code = $this->action_code;
 			}
-			
+
 			if ($this->action_type)
 			{
 				$this->action        = Red_Action::create ($this->action_type, $this->action_code);
@@ -65,11 +65,11 @@ class Red_Item
 			$this->match = $match;
 		}
 	}
-	
+
 	function get_all_for_module ($module)
 	{
 		global $wpdb;
-		
+
 		$sql = "SELECT @redirection_items.*,@redirection_groups.tracking FROM @redirection_items INNER JOIN @redirection_groups ON @redirection_groups.id=@redirection_items.group_id AND @redirection_groups.status='enabled' AND @redirection_groups.module_id='$module' WHERE @redirection_items.status='enabled' ORDER BY @redirection_groups.position,@redirection_items.position";
 		$sql = str_replace ('@', $wpdb->prefix, $sql);
 
@@ -80,15 +80,15 @@ class Red_Item
 			foreach ($rows AS $row)
 				$items[] = new Red_Item ($row);
 		}
-		
+
 		return $items;
-		
+
 	}
-	
+
 	function get_for_url ($url, $type)
 	{
 		global $wpdb;
-		
+
 		$sql = "SELECT @redirection_items.*,@redirection_groups.tracking,@redirection_modules.id AS module_id FROM @redirection_items INNER JOIN @redirection_groups ON @redirection_groups.id=@redirection_items.group_id AND @redirection_groups.status='enabled' INNER JOIN @redirection_modules ON @redirection_modules.id=@redirection_groups.module_id AND @redirection_modules.type='$type' WHERE (@redirection_items.regex=1 OR @redirection_items.url='".wpdb::escape ($url)."') AND @redirection_items.status='enabled' ORDER BY @redirection_groups.position,@redirection_items.position";
 		$sql = str_replace ('@', $wpdb->prefix, $sql);
 
@@ -99,17 +99,17 @@ class Red_Item
 			foreach ($rows AS $row)
 				$items[] = new Red_Item ($row);
 		}
-		
+
 		return $items;
 	}
-	
+
 	function get_by_module (&$pager, $module)
 	{
 		global $wpdb;
-		
+
 		$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->prefix}redirection_items INNER JOIN {$wpdb->prefix}redirection_groups ON {$wpdb->prefix}redirection_groups.id={$wpdb->prefix}redirection_items.group_id";
 		$sql .= $pager->to_limits ("{$wpdb->prefix}redirection_groups.module_id=".$module, array ('url', 'action_data'));
-		
+
 		$rows = $wpdb->get_results ($sql, ARRAY_A);
 		$pager->set_total ($wpdb->get_var ("SELECT FOUND_ROWS()"));
 		$items = array ();
@@ -118,17 +118,17 @@ class Red_Item
 			foreach ($rows AS $row)
 				$items[] = new Red_Item ($row);
 		}
-		
+
 		return $items;
 	}
-	
+
 	function get_by_group ($group, &$pager)
 	{
 		global $wpdb;
-		
+
 		$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->prefix}redirection_items ";
 		$sql .= $pager->to_limits ('group_id='.$group, array ('url', 'action_data'));
-		
+
 		$rows = $wpdb->get_results ($sql, ARRAY_A);
 		$pager->set_total ($wpdb->get_var ("SELECT FOUND_ROWS()"));
 		$items = array ();
@@ -137,25 +137,25 @@ class Red_Item
 			foreach ($rows AS $row)
 				$items[] = new Red_Item ($row);
 		}
-		
+
 		return $items;
 	}
-	
+
 	function get_by_id ($id)
 	{
 		global $wpdb;
-		
+
 		$id = intval ($id);
 		$row = $wpdb->get_row ("SELECT * FROM {$wpdb->prefix}redirection_items WHERE id='$id'", ARRAY_A);
 		if ($row)
 			return new Red_Item ($row);
 		return false;
 	}
-	
+
 	function auto_generate ()
 	{
 		global $redirection;
-		
+
 		$options = $redirection->get_options ();
 		$id = time ();
 
@@ -164,11 +164,11 @@ class Red_Item
 		$url = str_replace ('$hex$', sprintf ('%x', $id), $url);
 		return $url;
 	}
-	
+
 	function create ($details)
 	{
 		global $wpdb;
-		
+
 		// Auto generate URLs
 		if ($details['source'] == '')
 			$details['source'] = Red_Item::auto_generate ();
@@ -179,8 +179,8 @@ class Red_Item
 		// Make sure we don't redirect to ourself
 		if ($details['source'] == $details['target'])
 			$details['target'] .= '-1';
-		
-		$matcher = Red_Match::create ($details['match']);
+
+		$matcher   = Red_Match::create ($details['match']);
 		$group_id  = intval ($details['group']);
 
 		if ($group_id > 0 && $matcher)
@@ -190,9 +190,9 @@ class Red_Item
 			$url      = wpdb::escape (Red_Item::sanitize_url ($details['source'], $regex));
 			$action   = $details['action'];
 			$position = $wpdb->get_var ("SELECT COUNT(id) FROM {$wpdb->prefix}redirection_items WHERE group_id='{$group_id}'");
-			
+
 			$data = wpdb::escape ($matcher->data ($details));
-			
+
 			if ($action == 'url' || $action == 'random')
 				$action_code = 301;
 			else if ($action == 'error')
@@ -201,16 +201,16 @@ class Red_Item
 				$action_code = 0;
 
 			$wpdb->query ("INSERT INTO {$wpdb->prefix}redirection_items (url,action_type,regex,position,match_type,action_data,action_code,last_access,group_id) VALUES ('$url','$action','".($regex ? 1 : 0)."','$position','$match','$data',$action_code,0,'$group_id')");
-			
+
 			$group = Red_Group::get ($group_id);
 			Red_Module::flush ($group->module_id);
-			
+
 			return Red_Item::get_by_id ($wpdb->insert_id);
 		}
 
 		return false;
 	}
-	
+
 	function delete_by_group ($group)
 	{
 		global $wpdb;
@@ -218,20 +218,20 @@ class Red_Item
 		RE_Log::delete_for_group ($group);
 
 		$wpdb->query ("DELETE FROM {$wpdb->prefix}redirection_items WHERE group_id='$group'");
-		
+
 		$group = Red_Group::get ($group_id);
 		Red_Module::flush ($group->module_id);
 	}
-	
+
 	function delete ($id)
 	{
 		global $wpdb;
-		
+
 		$id = intval ($id);
 		$wpdb->query ("DELETE FROM {$wpdb->prefix}redirection_items WHERE id='$id'");
-		
+
 		RE_Log::delete_for_id ($id);
-		
+
 		// Reorder all elements
 		$rows = $wpdb->get_results ("SELECT id FROM {$wpdb->prefix}redirection_items ORDER BY position");
 		if (count ($rows) > 0)
@@ -240,8 +240,8 @@ class Red_Item
 				$wpdb->query ("UPDATE {$wpdb->prefix}redirection_items SET position='$pos' WHERE id='{$row->id}'");
 		}
 	}
-	
-	
+
+
 	function sanitize_url ($url, $regex)
 	{
 		// Make sure that the old URL is relative
@@ -253,22 +253,22 @@ class Red_Item
 			$url = '/'.$url;
 		return $url;
 	}
-	
-	
+
+
 	function update ($details)
 	{
 		if (strlen ($details['old']) > 0)
 		{
 			$this->url   = $details['old'];
 			$this->regex = isset ($details['regex']) ? true : false;
-		
+
 			// Update the match
 			$this->url = $this->sanitize_url ($this->url, $this->regex);
-			
+
 			$data  = wpdb::escape ($this->match->data ($details));
 			$url   = wpdb::escape ($this->url);
 			$regex = isset ($details['regex']) ? true : false;
-			
+
 			if (isset ($details['action_code']))
 				$action_code = intval ($details['action_code']);
 			else
@@ -278,22 +278,22 @@ class Red_Item
 			$group_id = $this->group_id;
 			if (isset ($details['group_id']))
 				$group_id = intval ($details['group_id']);
-			
+
 			// Save this
 			global $wpdb;
 			$wpdb->query ("UPDATE {$wpdb->prefix}redirection_items SET url='$url', regex='{$this->regex}', action_code='$action_code', action_data='$data', group_id='$group_id' WHERE id='{$this->id}'");
-			
+
 			$group = Red_Group::get ($group_id);
 			Red_Module::flush ($group->module_id);
 		}
 	}
-	
+
 	function save_order ($items, $start)
 	{
 		global $wpdb;
 		foreach ($items AS $pos => $id)
 			$wpdb->query ("UPDATE {$wpdb->prefix}redirection_items SET position='".($pos + $start)."' WHERE id='{$id}'");
-		
+
 		$item = Red_Item::get ($id);
 		$group = Red_Group::get ($item->group_id);
 		Red_Module::flush ($group->module_id);
@@ -315,7 +315,7 @@ class Red_Item
 				return $this->action->process_before ($this->action_code, $target);
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -333,20 +333,20 @@ class Red_Item
 			  $ip = $_SERVER['REMOTE_ADDR'];
 			else if (isset ($_SERVER['HTTP_X_FORWARDED_FOR']))
 			  $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		
+
 			$log = RE_Log::create ($url, $target, $_SERVER['HTTP_USER_AGENT'], $ip, $_SERVER['HTTP_REFERER'], $this->id, $this->module_id, $this->group_id);
 		}
 	}
-	
+
 	function reset ()
 	{
 		global $wpdb;
-		
+
 		$this->last_count  = 0;
 		$this->last_access = '0000-00-00 00:00:00';
-		
+
 		$wpdb->query ("UPDATE {$wpdb->prefix}redirection_items SET last_count=0, last_access='{$this->last_access}' WHERE id='{$this->id}'");
-		
+
 		RE_Log::delete_for_id ($this->id);
 	}
 
@@ -354,14 +354,14 @@ class Red_Item
 	{
 		return implode ('&#8203;/', explode ('/', $url));
 	}
-	
+
 	function move_to ($group)
 	{
 		global $wpdb;
 
 		$wpdb->query ("UPDATE {$wpdb->prefix}redirection_items SET group_id='$group' WHERE id='{$this->id}'");
 	}
-	
+
 	function toggle_status ()
 	{
 		global $wpdb;
@@ -380,14 +380,14 @@ class Red_Item
 			'error'   => 'Error (404)',
 			'nothing' => 'Do nothing',
 		);
-		
+
 		if ($action)
 			return $actions[$action];
 		return $actions;
 	}
-	
+
 	function match_name () { return $this->match->match_name ();	}
-	
+
 	function type ()
 	{
 		if (($this->action_type == 'url' || $this->action_type == 'error' || $this->action_type == 'random') && $this->action_code > 0)
