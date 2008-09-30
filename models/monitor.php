@@ -70,11 +70,10 @@ class Red_Monitor
 		$oldslug = $_POST['redirection_slug'];
 		$base    = get_option ('home');
 
-		if ($newslug != $oldslug && strlen ($oldslug) > 0 && ($post->post_status == 'publish' || $post->post_status == 'static') && $_POST['redirection_status'] != 'draft')
+		if ($newslug != $oldslug && strlen ($oldslug) > 0 && ($post->post_status == 'publish' || $post->post_status == 'static') && $_POST['redirection_status'] != 'draft' && $_POST['redirection_status'] != 'pending')
 		{
 			$old_url = parse_url ($oldslug);
 			$new_url = parse_url ($newslug);
-
 			Red_Item::create (array ('source' => $old_url['path'], 'target' => $new_url['path'], 'match' => 'url', 'action' => 'url', 'group' => $this->monitor_post));
 		}
 	}
