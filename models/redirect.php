@@ -226,7 +226,7 @@ class Red_Item {
 
 			$details = array_map( 'stripslashes', $details );
 
-			$this->regex = isset( $details['regex'] ) ? 1 : 0;
+			$this->regex = ( isset( $details['regex']) && $details['regex'] != false) ? 1 : 0;
 			$this->url   = self::sanitize_url( $details['old'], $this->regex );
 			$this->title = $details['title'];
 
